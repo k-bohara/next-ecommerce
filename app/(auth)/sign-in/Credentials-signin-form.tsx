@@ -18,14 +18,17 @@ const CredentialsSignInForm = () => {
 
   const searchParams = useSearchParams()
   const callbackUrl = searchParams.get('callbackUrl') || '/'
+
   const SignInButton = () => {
     const { pending } = useFormStatus()
+
     return (
-      <Button className='w-full' disabled={pending} variant='default'>
+      <Button disabled={pending} className='w-full' variant='default'>
         {pending ? 'Signing In...' : 'Sign In'}
       </Button>
     )
   }
+
   return (
     <form action={action}>
       <input type='hidden' name='callbackUrl' value={callbackUrl} />
@@ -55,11 +58,13 @@ const CredentialsSignInForm = () => {
         <div>
           <SignInButton />
         </div>
+
         {data && !data.success && (
           <div className='text-center text-destructive'>{data.message}</div>
         )}
+
         <div className='text-sm text-center text-muted-foreground'>
-          Don&apos;t have an account?
+          Don&apos;t have an account?{' '}
           <Link href='/sign-up' target='_self' className='link'>
             Sign Up
           </Link>
