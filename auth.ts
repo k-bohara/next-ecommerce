@@ -42,7 +42,7 @@ export const config = {
             }
           }
         }
-        // if user doesnot exist or password doesnot match
+        // if user doesn't exist or password doesn't match
         return null
       },
     }),
@@ -50,13 +50,33 @@ export const config = {
   callbacks: {
     async session({ session, token, user, trigger }: any) {
       if (token) {
+        //set the user id from the token
         session.user.id = token.sub
+        session.user.role = token.role
+        session.user.name = token.name
         // if there is an update, set the username
         if (trigger === 'update') {
           session.user.username = token.username
         }
       }
       return session
+    },
+    async jwt({ token, user, trigger, session }: any) {
+      // Assign user fields to token
+      if (user) {
+        token.role = user.role
+
+        // if the user has no name then use the email
+        if (user.name === 'NO_NAME') {
+          token.name = user.email.split('@')[0]
+          // update the database to reflect token name
+          await prisma.user.update({
+            where: { id: user.id },
+            data: { name: token.name },
+          })
+        }
+      }
+      return token
     },
   },
 } satisfies NextAuthConfig
